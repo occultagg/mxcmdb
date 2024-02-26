@@ -23,7 +23,7 @@ def get_cnt():
     for proj_name in url_dict.keys():
         if not url_dict[proj_name] == 'None':
             #print(url_dict[proj_name])
-            url = url_dict[proj_name] + '/im/v5/open/connections'
+            url = url_dict[proj_name] + '/openapi/uir'
             html = requests.request('GET', url, headers=header, verify=False)
             if html.status_code == 200:
                 cnt = json.loads(html.text)['data']['cache'][0]['cnt']
