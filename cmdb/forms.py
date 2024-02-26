@@ -44,7 +44,7 @@ class EditProjForm(forms.Form):
 class EditServerForm(forms.Form):
     project = forms.CharField(label='所属项目')
     env = forms.CharField(label='环境')
-    ip = forms.CharField(label='服务器IP/域名*')
+    ip = forms.CharField(label='服务器IP*')
     root = forms.CharField(label='服务器账号', help_text='"/"分隔多个', required=False)
     passwd = forms.CharField(label='服务器密码', help_text='"/"分隔多个', required=False)
     remote_port = forms.IntegerField(label='远程端口', required=False)

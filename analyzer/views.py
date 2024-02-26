@@ -5,20 +5,18 @@ from influxdb import InfluxDBClient
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 import datetime
-import os
 
 @login_required
 def analyzer(request, days=1):
     print(request.method)
-    projects = Project.objects.filter(~Q(name='运维'), Q(env='prod'), Q(mx_version='5.0'))
+    projects = Project.objects.filter(~Q(name='运维'), Q(env='prod'))
     #获取iinfluxdb数据
     res = {}
-    host = os.environ["INFLUXDB_HOST"]
-    port = os.environ["INFLUXDB_PORT"]
-    db = os.environ["INFLUXDB_DB_NAME"]
-    user = os.environ["INFLUXDB_USER"]
-    passwd = os.environ["INFLUXDB_PASSWD"]
-
+    host = settings.INFLUXDB['HOST']
+    port = settings.INFLUXDB['PORT']
+    db = settings.INFLUXDB['DATABASE']
+    user = settings.INFLUXDB['USER']
+    passwd = settings.INFLUXDB['PASSWD']
     client = InfluxDBClient(host, int(port), user, passwd, db)
     
     #influxdb中无数据就跳出

@@ -96,11 +96,11 @@ WSGI_APPLICATION = 'mxcmdb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ["MYSQL_DB_NAME"],
-        'USER': os.environ["MYSQL_ROOT"],
-        'PASSWORD': os.environ["MYSQL_PASSWD"],
-        'HOST': os.environ["MYSQL_HOST"],
-        'PORT': os.environ["MYSQL_PORT"],
+        'NAME': 'mxcmdb',
+        'USER': 'root',
+        'PASSWORD': '7705My))',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
@@ -134,7 +134,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False
+USE_TZ = True
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR,"static")
@@ -149,7 +149,7 @@ STATIC_URL = '/static/'
 #LOGIN_REDIRECT_URL = '/'
 
 # session 设置
-SESSION_COOKIE_AGE = 60 * 60 * 8 # 8小时
+SESSION_COOKIE_AGE = 60 * 30 # 30分钟
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True # 关闭浏览器，则COOKIE失效
 
@@ -165,11 +165,11 @@ PAGINATION_SETTINGS = {
 
 #influxdb配置
 INFLUXDB = {
-    'HOST': os.environ["INFLUXDB_HOST"],
-    'PORT': os.environ["INFLUXDB_PORT"],
-    'DATABASE': os.environ["INFLUXDB_DB_NAME"],
-    'USER': os.environ["INFLUXDB_USER"],
-    'PASSWD': os.environ["INFLUXDB_PASSWD"],
+    'HOST': '127.0.0.1',
+    'PORT': '8086',
+    'DATABASE': 'mxcmdb',
+    'USER': 'admin',
+    'PASSWD': '12345678',
     }
 
 #定时任务
@@ -180,25 +180,11 @@ CRONJOBS = [
 #es search
 HAYSTACK_CONNECTIONS = {
     'default': {
-        #'ENGINE': 'haystack.backends.elasticsearch5_backend.Elasticsearch5SearchEngine',
-        'ENGINE': 'wiki.elasticsearch5_ik_backend.Elasticsearch5IkSearchEngine',
-        'URL': os.environ["ES_URL"],
+        'ENGINE': 'haystack.backends.elasticsearch5_backend.Elasticsearch5SearchEngine',
+        'URL': 'http://127.0.0.1:9200',
         'PATH': os.path.join(BASE_DIR, 'wiki_index'),
-        'INDEX_NAME': 'mxcmdb_wiki_index',
+        'INDEX_NAME': 'wiki_index',
     },
 }
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 2
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
-
-#自定义高亮类
-HAYSTACK_CUSTOM_HIGHLIGHTER = 'wiki.utils.Highlighter'
-
-#自定义cdn地址
-BOOTSTRAP3 = {
-    "css_url": {
-        "url": "https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css",
-    },
-    "javascript_url": {
-        "url": "https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js",
-    },
-}

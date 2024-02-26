@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<div>
+    <title>美信CMDB</title>
+    <script src="{% static '/cmdb/js/jquery-1.11.1.min.js' %}"></script>
+    <script src="{% static '/cmdb/js/jquery.dataTables.min.js' %}"></script>
+    <link href="{% static '/cmdb/css/jquery.dataTables.min.css' %}" media="screen" rel="stylesheet"/>
+    <style>
+        body {
+            color: #555;
+            font: 12px/18px Helvetica, Arial, Verdana, "Microsoft yahei", sans-serif;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .table-content {
+            width: 80%;
+            margin: 0 auto;
+            position: relative;
+        }
+        .remark{
+            position:absolute;
+            top:0%;
+            left:30%;
+        }
+        #button{
+            position: absolute;
+            height: 40px;
+            width: 400px;
+            right: 0px;
+            bottom: 0px;
+        }
+
+        th {
+            text-align: left;
+        }
+    </style>
+    {% endblock head %}
+
+    {% block content %}
+    <div class="table-content">
+        <h4>项目名: <b>{{proj.name}}</b></h4>
+        <h5>环境: <b>{{proj.get_env_display}}</b></h5>
+        <p>版本: {{proj.mx_version}}</p>
+        <p>管理台地址: <a href="{{proj.cp_addr}}">{{proj.cp_addr}}</a></p>
+        <p>管理台管理员账号/密码: {{proj.cp_admin}} / {{proj.cp_password}}</p>
+        {% if proj.monitor_addr %}
+        <p>监控平台地址: <a href="{{proj.monitor_addr}}">{{proj.monitor_addr}}</a></p>
+        <p>监控平台管理员账号密码: {{proj.monitor_admin}} / {{proj.monitor_password}}</p>
+        {% endif %}
+        {% if proj.ops_admin %}
+        <p>运维全景图账号密码: {{proj.ops_admin}} / {{proj.ops_password}}</p>
+        {% endif %}
+        {% if proj.remark %}
+        <div class="remark"> 
+        <p>项目备注:</p>
+        <p>{{proj.remark|linebreaksbr}}</p>
+        </div>
+        {% endif %}
+        <div id="button">
+        <form action="{% url 'cmdb:edit_proj' proj.pk %}" method='get' style="margin:0px;display:inline;">
+        <button type="submit" class="btn btn-info">修改</button>
+        </form>
+        <form action="{% url 'cmdb:proj_info' proj.pk %}" method='get' style="margin:0px;display:inline;">
+        <button type="submit" class="btn btn-danger">数据库信息</button>
+        </form>
+        <form action="{% url 'wiki:get_wiki' proj.pk %}" method='get' style="margin:0px;display:inline;">
+        <button type="submit" class="btn btn-success">项目文档</button>
+        </form>
+        <form action="{% url 'cmdb:add_server' proj.pk %}" method='get' style="margin:0px;display:inline;">
+        <button type="submit" class="btn btn-warning">增加服务器</button>
+        </form>
+        </div>
+    </div>
+        <div class="table-content">
+            <hr>
+        <h4><a href="{% url 'file:export_excel'%}?project_id={{ project_id }}">导出</a>本项目到EXCEL</h4>
+        <table>
+            <thead>
+            <th>IP</th>
+            <th>CPU</th>
+            <th>内存</th>
+            <th>磁盘</th>
+            <th>系统类型</th>
+            <th>物理地址</th>
+            <th>应用</th>
+            <th>操作</th>
+            </thead>
+            <tbody>
+            {% for server in servers %}
+            <tr>
+                <td>{{ server.ip }}</td>
+                <td>{{ server.cpu }}</td>
+                <td>{{ server.mem }}</td>
+                <td>{{ server.disk }}</td>
+                <td>{{ server.get_os_type_display}}</td>
+                <td>{{ server.mac }}</td>
+                <td style="word-wrap:break-word;word-break:break-all;" width="200px">
+                    {% for service in server.service_set.all %}
+                    {{ service }};
+                    {% endfor %}
+                </td>
+                <td><a href="{{ server.get_absolute_url }}">查看详情</a> //
+                    <a href="{% url 'cmdb:del_server' server.pk proj.pk %}" onclick="return deleteJob();">删除</a></td>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            $(document).ready(function () {
+                $("table").DataTable({
+                    "paging": false,
+                    "bProcessing": true,
+                    "language": {
+                        "url": "/static/cmdb/js/Chinese.json"
+
+                    }
+                });
+            });
+        })
+    </script>
+    <script>
+
+        var trs = document.getElementsByTagName('tr');
+        for (var i = 1; i < trs.length; i++) {
+            trs[i].onmouseover = function () {
+                this.style.backgroundColor = '#ddd';
+                this.style.color = "blue";
+                //this.style.fontSize='14px';
+            };
+            trs[i].onmouseout = function () {
+                this.style.backgroundColor = '';
+                this.style.color = "";
+                this.style.fontSize = "";
+            }
+        }
+    </script>
+
+    <script type="text/javascript" language="JavaScript">
+		function deleteJob()
+		{
+		     if(confirm("删除本服务器将会删除该服务器下所有应用条目,请确认?"))
+		     {
+		         return true;
+		     }else{
+		         return false;
+			 }
+		}
+    </script>
+
+    {% if messages %}
+    <script>
+            {% for msg in messages %}
+                alert('{{ msg.message }}');
+            {% endfor %}
+        </script>
+    {% endif %}
+</div>
+{% endblock content %}
+
+

@@ -1,0 +1,128 @@
+{% extends 'wiki_base.html' %}
+{% load static %}
+{% load wiki_tags %}
+
+{% block spec_header %}
+<div class="logo">
+    <h3>
+        <b>{{project.name}}-{{project.get_env_display}}</b>
+    </h3>
+</div>
+{% endblock spec_header %}
+
+{% block spec_header1 %}            
+            <ul class="nav navbar-nav navbar-right">
+                {% if is_ops %}
+                <li class="cl-effect-11"><a href="{% url 'cmdb:index' %}" data-hover="返回">返回</a></li>
+                {% else %}
+                <li class="cl-effect-11"><a href="{% url 'cmdb:proj_detail' proj_pk %}" data-hover="返回">返回</a></li>
+                {% endif %}
+                {% if can_modi %}
+                <li class="cl-effect-11"><a href="{% url 'wiki:post_add' proj_pk %}" data-hover="添加文档">添加文档</a></li>
+                {% endif %}
+            </ul>
+{% endblock spec_header1 %}            
+
+{% block content %}
+					<main class="col-md-12">
+                    {% if page_obj.object_list %}
+                        <!--置顶文章-->
+						{% for post in page_obj.object_list %}
+						<article class="post post-{{ post.pk }}">
+							<header class="entry-header">
+								<h1 class="entry-title">
+									<a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+								</h1>
+								<div class="entry-meta">
+									{% if post.is_top %}
+                                    <span style="color:red">/置顶/</span>
+                                    {% endif %}
+									<span class="post-date" style="color:black"><time class="entry-date">创建:{{ post.created_time }}</a></span>
+                                    <span class="post-date" style="color:black"><time class="entry-date">修改:{{ post.modified_time }}</a></span>
+									<span class="post-author" style="color:black">作者:{{ post.author }}</span>
+                                    {% if post.project %}
+                                    <span class="comments-link" style="color:black">{{ post.project }}</span>
+                                    {% endif %}
+								</div>
+							</header>
+							<div class="entry-content clearfix">
+								<p>{{ post.excerpt }}......</p>
+								<div class="read-more cl-effect-14">
+									<a href="{{ post.get_absolute_url }}" class="more-link">继续阅读 <span class="meta-nav">→</span></a>
+								</div>
+							</div>
+						</article>
+						{% endfor %}
+                    {% else %}
+                        <div class="no-post">暂时还没有发布的文章！</div>
+                    {% endif %}
+                        <!--分页-->
+<div class="text-center pagination" style="width: 100%">
+  <ul>
+    {% if page_obj.has_previous %}
+      <li><a href="?{{ page_obj.previous_page_number.querystring }}"
+             class="prev">&lsaquo;&lsaquo; </a></li>
+    {% else %}
+      <li><span class="disabled prev">&lsaquo;&lsaquo; </span></li>
+    {% endif %}
+    {% for page in page_obj.pages %}
+      {% if page %}
+        {% ifequal page page_obj.number %}
+          <li class="current"><a href="#">{{ page }}</a></li>
+        {% else %}
+          <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>
+        {% endifequal %}
+      {% else %}
+        ...
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <li><a href="?{{ page_obj.next_page_number.querystring }}" class="next"> &rsaquo;&rsaquo;</a>
+      </li>
+    {% else %}
+      <li><span class="disabled next"> &rsaquo;&rsaquo;</span></li>
+    {% endif %}
+  </ul>
+</div>
+					</main>
+
+    {% if messages %}
+    <script>
+            {% for msg in messages %}
+                alert('{{ msg.message }}');
+            {% endfor %}
+        </script>
+    {% endif %}
+
+{% endblock content %}
+
+{% block toc %}
+{% if is_ops %}
+				<div class="widget widget-recent-posts">
+					<h3 class="widget-title">文章列表</h3>
+                    {% get_ops_posts as posts_list %}
+					<ul>
+                    {% for post in posts_list %}
+						<li>
+							<a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+						</li>
+					{% empty %}
+					<li>暂无文章...</li>
+					{% endfor %}
+					</ul>
+				</div>
+{% else %}
+				<div class="widget widget-recent-posts">
+					<h3 class="widget-title">文章列表</h3>
+					<ul>
+                    {% for post in page_obj.object_list %}
+						<li>
+							<a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+						</li>
+					{% empty %}
+					<li>暂无文章...</li>
+					{% endfor %}
+					</ul>
+				</div>
+{% endif %}
+{% endblock toc %}

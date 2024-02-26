@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% block head %}
+<title>美信CMDB</title>
+<style>
+    .main {
+        text-align: left;
+        border-radius: 20px;
+        width: 600px;
+        margin: auto;
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+    .main #button {
+        position:absolute;
+        right:0;
+        bottom:0;
+    }
+</style>
+{% endblock head %}
+{% block content %}
+<div class="main">
+    {% if error_message %}
+    <h4><font color="red">{{ error_message }}</font></h4>
+    {% endif %}
+    <form action="{% url 'cmdb:add_proj' %}" method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% bootstrap_button content='确定' button_class='btn btn-info'%}
+    </form>
+    <div id="button">
+        <form action="{% url 'cmdb:get_proj' %}" method='get'>
+        <button type="submit" class="btn btn-warning">返回</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

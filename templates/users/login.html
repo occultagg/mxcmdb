@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% block head %}
+{% endblock head %}
+{% block content %}
+<div style="position: absolute; left: 50%; margin-left: -100px">
+<form method="post" action="{% url 'users:login' %}?next={{ redirect_to }}" class="form-row">
+    <div>
+        {% csrf_token %}
+        {% bootstrap_form form %}
+    </div>
+    <div style="position: absolute; left: 68%; margin-right: -35px; top: 75px">
+    <p><a href="">忘记密码?</a></p>
+    </div>
+    {% if message %}
+    <p><font color="red">{{ message }}</font></p>
+    {% endif %}
+    <div style="position: absolute; left: 50%; margin-left: -35px">
+    {% buttons %}
+    <button name="submit" class="btn btn-primary">登录</button>
+    {% endbuttons %}
+    </div>
+</form>
+</div>
+{% endblock content %}

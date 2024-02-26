@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<div>
+    <title>美信CMDB</title>
+    <script src="{% static '/cmdb/js/jquery-1.11.1.min.js' %}"></script>
+    <script src="{% static '/cmdb/js/jquery.dataTables.min.js' %}"></script>
+    <link href="{% static '/cmdb/css/jquery.dataTables.min.css' %}" media="screen" rel="stylesheet"/>
+    <style>
+        body {
+            color: #555;
+            font: 12px/18px Helvetica, Arial, Verdana, "Microsoft yahei", sans-serif;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .table-content {
+            width: 80%;
+            margin: 0 auto;
+            position: relative;
+        }
+        #button{
+            position: absolute;
+            height: 40px;
+            width: 300px;
+            right: 0px;
+            bottom: 0px;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        .box{
+            height: 50px;
+            overflow: hidden;
+            transition: height .8s;
+            right: 0px;
+            bottom: 0px;
+        }
+        .box:hover{
+            height: auto;
+        }
+    </style>
+{% endblock head %}
+
+{% block content %}
+    <div class="table-content">
+        <p>
+        <form action="{{ project.get_absolute_url }}" method='get'>
+        <button type="submit" class="btn btn-info btn-lg btn-block">{{proj_name}}-{{env}}</button>
+        </form>
+        </p>
+    </div>
+    <div class="table-content">
+        <button type="button" class="btn btn-danger btn-lg btn-block">数据库信息</button>
+        <hr>
+        <h2><b>mysql节点:</b>{% for ip in mysql_ip %}{% if not ip == None %} {{ip}};{% endif %} {% endfor %}</h2>
+        <h2><b>mysql账号:</b>{% for root in mysql_root %}{% if not root == None %} {{root}};{% endif %}{% endfor %}</h2>
+        <h2><b>mysql密码:</b>{% for passwd in mysql_passwd %}{% if not passwd == None %} {{passwd}};{% endif %}{% endfor %}</h2>
+        <h2><b>mysql端口:</b>{% for port in mysql_port %}{% if not port == None %} {{port}};{% endif %}{% endfor %}</h2>
+            <hr>
+        <h2><b>redis/sentinel节点:</b>{% for ip in redis_ip %}{% if not ip == None %} {{ip}};{% endif %} {% endfor %}</h2>
+        <h2><b>redis/sentinel密码:</b>{% for passwd in redis_passwd %}{% if not passwd == None %} {{passwd}};{% endif %}{% endfor %}</h2>
+        <h2><b>redis/sentinel端口:</b>{% for port in redis_port %}{% if not port == None %}{{port}};{% endif %}{% endfor %}</h2>
+            <hr>
+        <h2><b>mongodb节点:</b>{% for ip in mongodb_ip %}{% if not ip == None %} {{ip}};{% endif %} {% endfor %}</h2>
+        <h2><b>mongodb账号:</b>{% for root in mongodb_admin %}{% if not root == None %} {{root}};{% endif %}{% endfor %}</h2>
+        <h2><b>mongodb密码:</b>{% for passwd in mongodb_passwd %}{% if not passwd == None %} {{passwd}};{% endif %}{% endfor %}</h2>
+        <h2><b>mongodb端口:</b>{% for port in mongodb_port %}{% if not port == None %}{{port}};{% endif %}{% endfor %}</h2>
+    </div>
+{% endblock content %}

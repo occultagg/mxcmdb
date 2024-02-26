@@ -149,16 +149,16 @@ def edit_server(request, proj_pk, server_pk):
         form = EditServerForm(request.POST)
         if form.is_valid():
             server.ip = get_form_value_or_none(form.cleaned_data['ip'])
-#            server_test = Server.objects.filter(ip=form.cleaned_data['ip'],project=proj_pk)
-#            if server_test.exists():
-#                error_message = '{}-{}中{}已存在'.format(form.cleaned_data['project'], form.cleaned_data['env'], form.cleaned_data['ip'])
-#                form = EditServerForm(request.POST)
-#                context = {
-#                    'error_message': error_message,
-#                    'form': form,
-#                    'server': server,
-#                }
-#                return render(request, 'cmdb/edit_server.html', context=context) 
+            server_test = Server.objects.filter(ip=form.cleaned_data['ip'],project=proj_pk)
+            if server_test.exists():
+                error_message = '{}-{}中{}已存在'.format(form.cleaned_data['project'], form.cleaned_data['env'], form.cleaned_data['ip'])
+                form = EditServerForm(request.POST)
+                context = {
+                    'error_message': error_message,
+                    'form': form,
+                    'server': server,
+                }
+                return render(request, 'cmdb/edit_server.html', context=context) 
             server.root = get_form_value_or_none(form.cleaned_data['root'])
             server.passwd = get_form_value_or_none(form.cleaned_data['passwd'])
             server.remote_port = get_form_value_or_none(form.cleaned_data['remote_port'])

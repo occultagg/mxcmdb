@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<div>
+    <title>美信CMDB</title>
+    <script src="{% static '/cmdb/js/jquery-1.11.1.min.js' %}"></script>
+    <script src="{% static '/cmdb/js/jquery.dataTables.min.js' %}"></script>
+    <link href="{% static '/cmdb/css/jquery.dataTables.min.css' %}" media="screen" rel="stylesheet"/>
+    <style>
+        body {
+            color: #555;
+            font: 12px/18px Helvetica, Arial, Verdana, "Microsoft yahei", sans-serif;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .table-content {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        th {
+            text-align: left;
+        }
+    </style>
+    {% endblock head %}
+
+    {% block content %}
+    <div class="table-content">
+        {% if is_superuser %}
+        <h4>通过EXCEL<a href="{% url 'file:download_excel' %}" target="_blank">模版</a>文件<a href="{% url 'file:import_excel'%}">导入</a></h4>
+        {% endif %}
+        {% if error %}
+        <h4>{{ error }} or</h4>
+        {% endif %}
+        <h4><a href="{% url 'cmdb:add_proj' %}">手动录入</a>项目</h4>
+        <table>
+            <thead>
+            <th>我的项目</th>
+            <th>环境</th>
+            <th>项目版本</th>
+            <th>管理台地址</th>
+            <th>操作</th>
+            </thead>
+            <tbody>
+            {% for proj in projs.all %}
+            <tr>
+                <td>{{ proj.name }}</td>
+                <td>{{ proj.get_env_display }}</td>
+                <td>{{ proj.mx_version }}</td>
+                <td><a href="{{ proj.cp_addr }}">{{ proj.cp_addr }}</a></td>
+                <td><a href="{{ proj.get_absolute_url }}">查看服务器详情</a> //
+                    <a href="{% url 'cmdb:del_proj' proj.pk %}" onclick="return deleteJob();">删除</a></td>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            $(document).ready(function () {
+                $("table").DataTable({
+                    "paging": false,
+                    "bProcessing": true,
+                    "language": {
+                        "url": "/static/cmdb/js/Chinese.json"
+
+                    }
+                });
+            });
+        })
+    </script>
+    <script>
+        var trs = document.getElementsByTagName('tr');
+        for (var i = 1; i < trs.length; i++) {
+            trs[i].onmouseover = function () {
+                this.style.backgroundColor = '#ddd';
+                this.style.color = "blue";
+                //this.style.fontSize='14px';
+            };
+            trs[i].onmouseout = function () {
+                this.style.backgroundColor = '';
+                this.style.color = "";
+                this.style.fontSize = ""
+            }
+        }
+    </script>
+
+    <script type="text/javascript" language="JavaScript">
+		function deleteJob()
+		{
+		     if(confirm("删除项目将会删除该项目下所有服务器及应用条目,请确认?"))
+		     {
+		         return true;
+		     }else{
+		         return false;
+			 }
+		}
+    </script>
+
+    {% if messages %}
+    <script>
+            {% for msg in messages %}
+                alert('{{ msg.message }}');
+            {% endfor %}
+        </script>
+    {% endif %}
+</div>
+{% endblock content %}

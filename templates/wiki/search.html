@@ -1,0 +1,64 @@
+{% extends "wiki_base.html" %}
+{% load bootstrap3 %}
+{% load highlight %}
+{% block head %}
+<title>美信CMDB</title>
+{% endblock head %}
+
+{% block spec_header %}
+<div class="logo">
+    <h2>
+        <b>搜索结果</b>
+    </h2>
+</div>
+{% endblock spec_header %}
+
+{% block content %}
+    {% if error_message %}
+    {{error_message}}
+    {% else %}
+    {% for post in page_obj %}
+ 	<article class="post post-{{ post.pk }}">
+ 		<header class="entry-header">
+ 			<h1 class="entry-title">
+ 				<a href="{{ post.get_absolute_url }}">{% highlight  post.object.title with query %}</a>
+ 			</h1>
+ 			<div class="entry-meta">
+ 				{% if post.is_top %}
+                 <span style="color:red">/置顶/</span>
+                 {% endif %}
+ 				<span class="post-date" style="color:black"><time class="entry-date">创建:{{ post.created_time }}</a></span>
+                 <span class="post-date" style="color:black"><time class="entry-date">修改:{{ post.modified_time }}</a></span>
+ 				<span class="post-author" style="color:black">作者:{{ post.author }}</span>
+                 {% if post.project %}
+                 <span class="comments-link" style="color:black">{{ post.project }}</span>
+                 {% endif %}
+ 			</div>
+ 		</header>
+ 		<div class="entry-content clearfix">
+ 			<p>{% highlight  post.object.content  with query %}</p>
+ 			<div class="read-more cl-effect-14">
+ 				<a href="{{ post.get_absolute_url }}" class="more-link">继续阅读 <span class="meta-nav">→</span></a>
+ 			</div>
+ 		</div>
+ 	</article>
+    {% empty %}
+        <div class="no-post">没有搜索到你想要的结果！</div>
+    {% endfor %}
+    {% endif%}
+{% endblock content %}
+
+{% block toc %}
+	<div class="widget widget-recent-posts">
+		<h3 class="widget-title">结果列表</h3>
+		<ul>
+        {% for post in object_list %}
+			<li>
+				<a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+			</li>
+		{% empty %}
+		<li>没有结果！</li>
+		{% endfor %}
+		</ul>
+	</div>
+{% endblock toc %}

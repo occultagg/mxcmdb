@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+    <style>
+        .table-content {
+            width: 80%;
+            margin: 0 auto;
+            position: relative;
+        }
+    </style>
+<script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.4.0/echarts.common.js"></script>
+{% endblock head%}
+
+{% block content %}
+<div class="table-content">
+    <div>
+        <form action="{% url 'analyzer:analyzer' 1 %}" method='get' style="margin:0px;display:inline;">
+        <button type="submit" class="btn btn-info">1天</button>
+        </form>
+        <form action="{% url 'analyzer:analyzer' 7 %}" method='get' style="margin:0px;display:inline;">
+        <button type="submit" class="btn btn-success">7天</button>
+        </form>
+        <form action="{% url 'analyzer:analyzer' 15 %}" method='get' style="margin:0px;display:inline;">
+        <button type="submit" class="btn btn-warning">15天</button>
+        </form>
+        <form action="{% url 'analyzer:analyzer' 30 %}" method='get' style="margin:0px;display:inline;">
+        <button type="submit" class="btn btn-danger">30天</button>
+        </form>
+        <input id="selectall" type="button" value="全不选" flag="1"/>
+    </div>
+    {% if error_message %}
+    <p>{{  error_message }}</p>
+    {% endif %}
+</div>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="width:100%;height:600px;"></div>
+<p>调试用数据展示</p>
+<p>x:{{x}}</p>
+{% for k, v in res.items %}
+<p>k:{{k}}</p>
+<p>v:{{v}}</p>
+{%endfor%}
+
+   <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '各项目最近{{days}}天在线用户数',
+                subtext: '采集精度为1小时',
+                left: 'center',
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            toolbox : {
+                top: 0,
+                right: 50,
+                feature: {
+                    dataZoom: {
+                        show : true,
+                        yAxisIndex: "none",
+                    },
+                    magicType: {
+                        type: ["line", "bar"]
+                    },
+                    restore: {},
+                    saveAsImage: {},
+                }
+            },
+            legend: {
+                type: 'scroll',
+                bottom: 0,
+                data:{{ project_list|safe }},
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    boundaryGap : false,
+                    data : {{ x|safe }},
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                {% for k, v in res.items %}
+                {
+                    name: '{{ k|safe }}',
+                    type:'line',
+                    data: {{ v|safe }},
+                    selected:false,
+                    markLine: {
+                        data: [
+                            {type: 'average', name: '平均值'}
+                        ]
+                    },
+                    markPoint: {
+                        data: [
+                            {type: 'max', name: '最大值'},
+                            {type: 'min', name: '最小值'}
+                        ]
+                    }
+
+                },
+                {% endfor %}
+            ]
+        };
+
+     	// 使用刚指定的选择项数据显示图表。
+        myChart.setOption(option);
+
+//全选
+        var selectArr = myChart.getOption().legend[0].data;
+        
+        $('#selectall').click(function(){
+            var flag = $(this).attr('flag');
+            if(flag == 1){
+                var val = false;
+                $(this).attr('flag',0);
+                $(this).val('全选中');
+            }else{
+                var val = true;
+                $(this).attr('flag',1);
+                $(this).val('全不选');
+            }
+            var obj = {};
+            for(var key in selectArr){
+                obj[selectArr[key]] = val;
+            }    
+            option.legend.selected = obj;
+            myChart.setOption(option);
+        });
+    </script>
+{% endblock content %}

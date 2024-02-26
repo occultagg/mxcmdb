@@ -26,7 +26,7 @@ urlpatterns = [
     path('wiki/', include('wiki.urls')),
     path('mdeditor/', include('mdeditor.urls')),
     path('analyzer/', include('analyzer.urls')),
-    path('search/', include('haystack.urls')),
+    #path('wiki/search/', include('haystack.urls')),
 ]
 
 if settings.DEBUG:

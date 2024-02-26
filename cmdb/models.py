@@ -45,7 +45,7 @@ class Permission(models.Model):
 
 #服务器
 class Server(models.Model):
-    ip = models.CharField(max_length=400, verbose_name='服务器ip/域名', blank=False, default='0.0.0.0')
+    ip = models.GenericIPAddressField(verbose_name='服务器ip', blank=False, default='1.1.1.1')
     project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True, verbose_name='关联项目')
 
     root = models.CharField(max_length=200, blank=True, null=True, default='root', verbose_name='服务器账号')

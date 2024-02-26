@@ -93,23 +93,12 @@ def export_excel(request):
     for server in servers:
         services = Service.objects.filter(server=server.pk)
         server_inc_count = 0
-        #当服务器无应用时,写入应用名写入None,不然导出时会出错
-        if not services:
-            row1 = (
-                (server.ip, server.get_os_type_display(), server.os, server.cpu, server.mem, server.disk, server.remote_port, server.root, server.passwd, server.mac, server.remark,
-                  'None', service.service_version, service.db_root, service.db_passwd, service.get_charcater_display(), service.repl_name, service.remark, protocol.upper(), port)
-                )
-            sheet1.append(row1)
-            continue
         for service in services:
             service_inc_count = 0
 
             str_proto_port = unicodedata.normalize('NFKC', str(service.protocol_port))
             for protocol_port in str_proto_port.split('/'):
-                try:
-                    protocol, port = protocol_port.split('-')
-                except:
-                    protocol, port = ['', '']
+                protocol, port = protocol_port.split('-')
                 server_inc_count += 1
                 service_inc_count += 1
                 row1 = (
@@ -159,14 +148,7 @@ def export_excel(request):
     sheet2['A12'] = project.ops_admin
     sheet2['B12'] = project.ops_password
     sheet2['A15'] = project.remark
-    
-    #sheet1全表居中
-    nrows = sheet1.max_row
-    ncols = sheet1.max_column
-    for i in range(nrows):
-        for j in range(ncols):
-            sheet1.cell(row=i+1, column=j+1).alignment = Alignment(horizontal='center', vertical='center')
-        
+
     #生成文件
     file_name = str(project.name) + '-' + str(project.get_env_display()) + '.xlsx'
     book.save('tmp/export/' + file_name)

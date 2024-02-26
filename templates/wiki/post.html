@@ -1,0 +1,114 @@
+{% extends 'wiki_base.html' %}
+{% load bootstrap3 %}
+{% load wiki_tags %}
+{% load static %}
+
+{% block head %}
+<!--mdeditor css-->
+  <link href="{% static 'mdeditor/css/editormd.min.css' %}" rel="stylesheet">
+  <link href="{% static 'mdeditor/css/editormd.preview.css' %}" rel="stylesheet">
+
+{% endblock head %}
+
+{% block spec_header %}
+<div class="logo">
+    <h2>
+        <b>{{ post.title }}</b>
+    </h2>
+</div>
+{% endblock spec_header %}
+
+{% block content %}
+    <body>
+    <div class="entry-meta">
+    <span class="post-date" style="color:black"><time class="entry-date">创建:{{ post.created_time }}</a></span>
+    <span class="post-date" style="color:black"><time class="entry-date">修改:{{ post.modified_time }}</a></span>
+    <span class="post-author" style="color:black">作者:{{ post.author }}</span>
+    {% if post.project %}
+    <span class="comments-link" style="color:black">{{ post.project }}</span>
+    {% endif %}
+    </div>
+     <div id="content"><textarea>{{ post.content }}</textarea></div>
+
+<!--mdeditor js-->
+  <script src="{% static 'mdeditor/js/jquery.min.js' %}"></script>
+  <script src="{% static 'mdeditor/js/editormd.min.js' %}"></script>
+  <script src="{% static 'mdeditor/js/lib/marked.min.js' %}"></script>
+  <script src="{% static 'mdeditor/js/lib/prettify.min.js' %}"></script>
+  <script src="{% static 'mdeditor/js/lib/raphael.min.js' %}"></script>
+  <script src="{% static 'mdeditor/js/lib/underscore.min.js' %}"></script>
+  <script src="{% static 'mdeditor/js/lib/sequence-diagram.min.js' %}"></script>
+  <script src="{% static 'mdeditor/js/lib/flowchart.min.js' %}"></script>
+  <script src="{% static 'mdeditor/js/lib/jquery.flowchart.min.js' %}"></script>
+
+<script>
+  $(function () {
+      // js 解析markdown
+      editormd.markdownToHTML("content", {
+          //htmlDecode      : "style,script,iframe",  // you can filter tags decode
+          emoji           : true,
+          taskList        : true,
+          tex             : true,  // 默认不解析
+          flowChart       : true,  // 默认不解析
+          sequenceDiagram : true,  // 默认不解析
+      });
+
+      $(".reference-link").each(function (i,obj) {
+        console.log(obj)
+      })
+  })
+
+</script>
+    </body>
+{% endblock content %}
+
+{% block toc %}
+    {% if copy_post.toc %}
+    <div class="widget widget-content">
+      <h3 class="widget-title">文章目录</h3>
+      <div class="toc">
+        <ul>
+          {{ copy_post.toc|safe }}
+        </ul>
+      </div>
+    </div>
+    {% endif %}
+    <div class="widget widget-content">
+        {% if is_ops %}
+            <form action="{% url 'wiki:get_ops_wiki' %}" method='get' style="margin:0px;display:inline;">
+        {% else %}
+            <form action="{% url 'wiki:get_wiki' proj_pk %}" method='get' style="margin:0px;display:inline;">
+        {% endif %}
+        <button type="submit" class="btn btn-info">返回</button>
+        </form>
+        {% if can_modi %}
+        <form action="{% url 'wiki:post_edit' proj_pk post.pk %}" method='get' style="margin:0px;display:inline;">
+        <button type="submit" class="btn btn-warning">修改</button>
+        </form>
+        <form action="{% url 'wiki:post_del' proj_pk post.pk %}" method='get' style="margin:0px;display:inline;">
+        <button type="submit" class="btn btn-danger" onclick="return deleteJob();">删除</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <script type="text/javascript" language="JavaScript">
+		function deleteJob()
+		{
+		     if(confirm("确定删除本文档?"))
+		     {
+		         return true;
+		     }else{
+		         return false;
+			 }
+		}
+    </script>
+    <SCRIPT type="text/javascript" >
+    $(document).ready(function(){
+        $('#tree').ztree_toc({
+
+        });
+    });
+    </SCRIPT>
+
+{% endblock toc %}
+

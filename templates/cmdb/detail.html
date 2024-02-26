@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<div>
+    <title>美信CMDB</title>
+    <script src="{% static '/cmdb/js/jquery-1.11.1.min.js' %}"></script>
+    <script src="{% static '/cmdb/js/jquery.dataTables.min.js' %}"></script>
+    <link href="{% static '/cmdb/css/jquery.dataTables.min.css' %}" media="screen" rel="stylesheet"/>
+    <style>
+        body {
+            color: #555;
+            font: 12px/18px Helvetica, Arial, Verdana, "Microsoft yahei", sans-serif;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .table-content {
+            width: 80%;
+            margin: 0 auto;
+            position: relative;
+        }
+        #button{
+            position: absolute;
+            height: 40px;
+            width: 300px;
+            right: 0px;
+            bottom: 0px;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        .box{
+            height: 50px;
+            overflow: hidden;
+            transition: height .8s;
+            right: 0px;
+            bottom: 0px;
+        }
+        .box:hover{
+            height: auto;
+        }
+    </style>
+{% endblock head %}
+
+{% block content %}
+    <div class="table-content">
+        <p>
+        <button type="button" class="btn btn-info btn-lg btn-block">{{server.ip}}</button>
+        </p>
+        <h4>服务器ip: <b>{{server.ip}}</b></h4>
+        <h4>项目: <b>{{proj}}</b> 环境: <b>{{env}}</b></h4>
+        <h5>CPU: {{server.cpu}}核 内存: {{server.mem}}G 磁盘: {{server.disk}}G</h5>
+        <h5>系统类型: {{server.get_os_type_display}}</h5>
+        <h5>系统版本: {{server.os}}</h5>
+        {% if server.mac %}
+        <h5>物理地址: {{server.mac}}</h5>
+        {% endif %}
+        {% if server.remark %}
+        <h5>备注: {{server.remark}}</h5>
+        {% endif %}
+        <div id="button">
+        <form action="{% url 'cmdb:edit_server' server.project.pk server.pk %}" method='get' style="margin:0px;display:inline;">
+        <button type="submit" class="btn btn-info">修改</button>
+        </form>
+        <form action="{% url 'cmdb:proj_detail' server.project.pk %}" method='get' style="margin:0px;display:inline;">
+        <button type="submit" class="btn btn-success">返回</button>
+        </form>
+        <form action="{% url 'cmdb:add_service' server.project.pk  server.pk %}" method='get' style="margin:0px;display:inline;">
+        <button type="submit" class="btn btn-warning">增加应用</button>
+        </form>
+        </div>
+    </div>
+
+    <div class="table-content">
+        <div class="box">
+        <button type="button" class="btn btn-danger btn-lg btn-block">登录信息</button>
+        <h2><b>账号:</b>{{server.root}} <b>密码:</b>{{server.passwd}} <b>远程端口:</b>{{server.remote_port}}</h2>
+        </div>
+
+        <p>
+        <button type="button" class="btn btn-warning btn-lg btn-block">应用信息</button>
+        </p>
+        <table>
+            <thead>
+            <th>应用名</th>
+            <th>应用版本号</th>
+            <th>数据库账号</th>
+            <th>数据库密码</th>
+            <th>节点角色</th>
+            <th>集群名</th>
+            <th>协议-端口</th>
+            <th>备注</th>
+            <th>操作</th>
+            </thead>
+            <tbody>
+            {% for service in services %}
+            <tr>
+                <td>{{ service.name }}</td>
+                <td>{{ service.service_version }}</td>
+                <td>{{ service.db_root }}</td>
+                <td>{{ service.db_passwd }}</td>
+                <td>{{ service.get_charcater_display }}</td>
+                <td>{{ service.repl_name }}</td>
+                <td>{{ service.protocol_port }}</td>
+                <td>{{ service.remark }}</td>
+                <td><a href="{{ service.get_absolute_url }}">修改</a> //
+                    <a href="{% url 'cmdb:del_service' service.pk server.project.pk server.pk %}" onclick="return deleteJob();">删除</a></td>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+        <script type="text/javascript">
+        $(function () {
+            $(document).ready(function () {
+                $("table").DataTable({
+                    "paging": false,
+                    "bProcessing": true,
+                    "language": {
+                        "url": "/static/cmdb/js/Chinese.json"
+                    }
+                });
+            });
+        })
+    </script>
+    <script>
+        var trs = document.getElementsByTagName('tr');
+        for (var i = 1; i < trs.length; i++) {
+            trs[i].onmouseover = function () {
+                this.style.backgroundColor = '#ddd';
+                this.style.color = "blue";
+                // this.style.fontSize='14px';
+            };
+            trs[i].onmouseout = function () {
+                this.style.backgroundColor = '';
+                this.style.color = "";
+                this.style.fontSize = ""
+            }
+        }
+    </script>
+
+            <script type="text/javascript" language="JavaScript">
+		function deleteJob()
+		{
+		     if(confirm("删除本服务器将会删除该服务器下所有应用条目,请确认?"))
+		     {
+		         return true;
+		     }else{
+		         return false;
+			 }
+		}
+    </script>
+
+    {% if messages %}
+    <script>
+            {% for msg in messages %}
+                alert('{{ msg.message }}');
+            {% endfor %}
+        </script>
+    {% endif %}
+{% endblock content %}

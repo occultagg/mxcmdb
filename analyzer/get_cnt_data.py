@@ -4,7 +4,6 @@ from django.conf import settings
 import json, requests
 from influxdb import InfluxDBClient
 from datetime import datetime
-import os
 
 #获取实时在线用户数
 header = {
@@ -12,7 +11,7 @@ header = {
 }
 
 def get_cnt():
-    project_list = Project.objects.filter(~Q(name='运维'), Q(env='prod'), Q(mx_version='5.0'))
+    project_list = Project.objects.filter(~Q(name='运维'), Q(env='prod'))
     if not project_list:
         print('{}-无生产项目'.format(datetime.now()))
 
@@ -33,17 +32,11 @@ def get_cnt():
                 print('{}-{}-ERROR-{}-{}'.format(datetime.now(),proj_name,url,html.status_code))
                 result[proj_name] = -1
 
-    #host = settings.INFLUXDB['HOST']
-    #port = settings.INFLUXDB['PORT']
-    #db = settings.INFLUXDB['DATABASE']
-    #user = settings.INFLUXDB['USER']
-    #passwd = settings.INFLUXDB['PASSWD']
-    host = os.environ["INFLUXDB_HOST"]
-    port = os.environ["INFLUXDB_PORT"]
-    db = os.environ["INFLUXDB_DB_NAME"]
-    user = os.environ["INFLUXDB_USER"]
-    passwd =  os.environ["INFLUXDB_PASSWD"]
-
+    host = settings.INFLUXDB['HOST']
+    port = settings.INFLUXDB['PORT']
+    db = settings.INFLUXDB['DATABASE']
+    user = settings.INFLUXDB['USER']
+    passwd = settings.INFLUXDB['PASSWD']
     client = InfluxDBClient(host, int(port), user, passwd, db)
 
     _ = 0
