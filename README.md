@@ -49,3 +49,18 @@ python manager runserver
 ## 功能截图
 - 主页
   ![](https://github.com/occultagg/mxcmdb/blob/main/screenshot/index.png)
+- 登录后主页
+  ![](https://github.com/occultagg/mxcmdb/blob/main/screenshot/login.png)
+- 项目列表
+  支持模板导入,支持手动录入,以表格方式展示,支持前端搜索(js脚本名)
+  ![项目列表](https://github.com/occultagg/mxcmdb/blob/main/screenshot/projects-list.png)
+  ![手动录入](https://github.com/occultagg/mxcmdb/blob/main/screenshot/manumally.png)
+  ![项目信息](https://github.com/occultagg/mxcmdb/blob/main/screenshot/server-list.png)
+- 运维文档
+  markdown渲染,在线markdown编辑器
+  ![运维文档](https://github.com/occultagg/mxcmdb/blob/main/screenshot/docs.png)
+  ![在线编辑](https://github.com/occultagg/mxcmdb/blob/main/screenshot/markdown-editor.png)
+- 数据统计
+  定时任务获取数据写入influxdb,通过e-chart展示
+  ![数据统计](https://github.com/occultagg/mxcmdb/blob/main/screenshot/data.png)
+
