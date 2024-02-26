@@ -47,3 +47,5 @@ python manager.py createsuperuser
 python manager runserver
 ```
 ## 功能截图
+- 主页
+  ![](https://github.com/occultagg/mxcmdb/blob/main/screenshot/index.png)
